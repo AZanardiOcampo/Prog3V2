@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
-import { auth } from '../Firebase/Config'
+import { auth } from '../firebase/Config'
 
 class Login  extends Component {
     constructor(props){
@@ -36,46 +36,61 @@ class Login  extends Component {
         }
 
         auth.signInWithEmailAndPassword(email, password)
-        .then(user => console.log('Usuario Logueado', user))
+        .then(user => 
+        {if(user) {
+            this.props.navigation.navigate('tabnav')
+            console.log("El usuario logueado es ", user);
+        }})
 
     }
+    
 
-    render(){
-        return(
-            <View>
-                <Text>Loguea tu usuario</Text>
-                <TextInput
-                    onChangeText={(text) => this.setState({email: text, error: ''})}
-                    value={this.state.email}
-                    placeholder='Indica tu email'
-                    keyboardType='default'
-                    style={styles.input}
-                />
-                <TextInput
-                    onChangeText={(text) => this.setState({password: text, error: ''})}
-                    value={this.state.password}
-                    placeholder='Indica tu password'
-                    keyboardType='default'
-                    style={styles.input}
-                />
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={()=> this.onSubmit(this.state.email, this.state.password)}
-                >
-                    <Text style={styles.textBtn}>Loguearme</Text>
-                </TouchableOpacity>
-                {
-                    this.state.error !== '' ?
+    redirect(){
+        this.props.navigation.navigate('register')
+    }
+        render(){
+            return(
+                <View>
+                    <Text>Loguea tu usuario</Text>
+                    <TextInput
+                        onChangeText={(text) => this.setState({email: text, error: ''})}
+                        value={this.state.email}
+                        placeholder='Indica tu email'
+                        keyboardType='default'
+                        style={styles.input}
+                    />
+                    <TextInput
+                        onChangeText={(text) => this.setState({password: text, error: ''})}
+                        value={this.state.password}
+                        placeholder='Indica tu password'
+                        secureTextEntry = {true}
+                        keyboardType='default'
+                        style={styles.input}
+                    />
+                    <TouchableOpacity
+                        style={styles.btn}
+                        onPress={()=> this.onSubmit(this.state.email, this.state.password)}
+                    >
+                        <Text style={styles.textBtn}>Loguearme</Text>
+                    </TouchableOpacity>
                     <Text>
-                        {this.state.error}
+                        No tenes una cuenta? 
+                        <TouchableOpacity onPress={() => this.redirect()}>
+                            <Text> Registrate</Text>
+                        </TouchableOpacity>
                     </Text>
-                    : 
-                    ''
-                }
-            </View>
-        )
+                    {
+                        this.state.error !== '' ?
+                        <Text>
+                            {this.state.error}
+                        </Text>
+                        : 
+                        ''
+                    }
+                </View>
+            )
+        }
     }
-}
 
 const styles = StyleSheet.create({
     input: {

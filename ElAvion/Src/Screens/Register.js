@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
-import { auth } from '../Firebase/Config'
+import { auth } from '../firebase/Config'
 
 class Register extends Component {
     constructor(props){
@@ -9,7 +9,10 @@ class Register extends Component {
             name:'',
             password:'',
             email:'',
-            error: ''
+            error: '',
+            username: '',
+            minibio: '',
+            fotoPerfil: ''
         }
     }
 
@@ -44,6 +47,10 @@ class Register extends Component {
 
     }
 
+    redirect(){
+        this.props.navigation.navigate('login')
+    }
+
     render(){
         return(
             <View>
@@ -67,7 +74,29 @@ class Register extends Component {
                     value={this.state.password}
                     placeholder='Indica tu password'
                     keyboardType='default'
+                    secureTextEntry = {true}
                     style={styles.input}
+                />
+                <TextInput
+                        onChangeText={(text) => this.setState({username: text, error: ''})}
+                        value={this.state.username}
+                        placeholder='Indica tu nombre de usuario'
+                        keyboardType='default'
+                        style={styles.input}
+                />
+                <TextInput
+                        onChangeText={(text) => this.setState({minibio: text, error: ''})}
+                        value={this.state.minibio}
+                        placeholder='Indica tu nombre de mini biografia'
+                        keyboardType='default'
+                        style={styles.input}
+                />
+                <TextInput
+                        onChangeText={(text) => this.setState({fotoPerfil: text, error: ''})}
+                        value={this.state.minibio}
+                        placeholder='Indica tu foto de perfil'
+                        keyboardType='default'
+                        style={styles.input}
                 />
                 <TouchableOpacity
                     style={styles.btn}
@@ -75,6 +104,12 @@ class Register extends Component {
                 >
                     <Text style={styles.textBtn}>Registrarme</Text>
                 </TouchableOpacity>
+                <Text>
+                        Ya tenes una cuenta? 
+                        <TouchableOpacity onPress={() => this.redirect()}>
+                            <Text>Logueate</Text>
+                        </TouchableOpacity>
+                    </Text>
                 {
                     this.state.error !== '' ?
                     <Text>
