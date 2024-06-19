@@ -38,7 +38,7 @@ class Login  extends Component {
         auth.signInWithEmailAndPassword(email, password)
         .then(user => 
         {if(user) {
-            this.props.navigation.navigate('tabnav')
+            this.props.navigation.navigate('home')
             console.log("El usuario logueado es ", user);
         }})
 
@@ -62,7 +62,7 @@ class Login  extends Component {
                     <TextInput
                         onChangeText={(text) => this.setState({password: text, error: ''})}
                         value={this.state.password}
-                        placeholder='Indica tu password'
+                        placeholder='Indica tu contraseña'
                         secureTextEntry = {true}
                         keyboardType='default'
                         style={styles.input}

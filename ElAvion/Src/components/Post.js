@@ -1,7 +1,7 @@
 import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React, { Component } from 'react'
 import {FontAwesome} from '@expo/vector-icons'
-import {db, auth} from '../firebase/config'
+import {db, auth} from '../firebase/Config'
 import firebase from 'firebase'
 
 export default class Post extends Component {

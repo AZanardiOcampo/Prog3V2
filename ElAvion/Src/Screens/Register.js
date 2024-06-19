@@ -38,11 +38,10 @@ class Register extends Component {
         }
 
         auth.createUserWithEmailAndPassword(email, password)
-        .then(user =>  {
-            if(user){
-                console.log('Usuario Registrado');
-            }
-        })
+        .then(user => {if(user) {
+            this.props.navigation.navigate('login')
+            console.log("El usuario creado es ", user);
+        }})
 
 
     }
@@ -72,7 +71,7 @@ class Register extends Component {
                 <TextInput
                     onChangeText={(text) => this.setState({password: text, error: ''})}
                     value={this.state.password}
-                    placeholder='Indica tu password'
+                    placeholder='Indica tu contraseña'
                     keyboardType='default'
                     secureTextEntry = {true}
                     style={styles.input}
