@@ -2,12 +2,12 @@ import {Text, View, TouchableOpacity, Image, FlatList, TextInput} from 'react-na
 import {Component} from 'react'
 import { StyleSheet } from 'react-native'
 import firebase from 'firebase'
-import {db, auth} from '../firebase/config'
+import {db, auth} from '../firebase/Config'
 import { Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import { Component } from 'react';
 import { StyleSheet } from 'react-native';
 import firebase from 'firebase';
-import { db, auth } from '../firebase/config';
+import { db, auth } from '../firebase/Config';
 import { AntDesign } from '@expo/vector-icons';
 
 class DetallePosteo extends Component {

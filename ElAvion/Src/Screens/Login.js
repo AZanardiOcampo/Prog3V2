@@ -38,7 +38,7 @@ class Login  extends Component {
         auth.signInWithEmailAndPassword(email, password)
         .then(user => 
         {if(user) {
-            this.props.navigation.navigate('new-post')
+            this.props.navigation.navigate('tabnav')
             console.log("El usuario logueado es ", user);
         }})
 
