@@ -2,10 +2,8 @@ import {Text, View , FlatList} from 'react-native'
 import React, {Component} from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {NavigationContainer} from '@react-navigation/native'
-import Register from '../screens/Register'
 import {db, auth} from '../firebase/Config'
 import { StyleSheet } from 'react-native'
-import Login from '../screens/Login'
 import Post from '../components/Post'
 
 
@@ -44,7 +42,7 @@ export default class Feed extends Component {
                 <FlatList
                 data={this.state.posteos}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({item}) => <View><Post navigation = {this.props.navigation} posteo={item}/></View>} 
+                renderItem={({item}) => <View><Post navigation = {this.props.navigation} post={item}/></View>} 
                 />
             </View>
         )

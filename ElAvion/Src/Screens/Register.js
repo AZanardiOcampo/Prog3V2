@@ -39,11 +39,23 @@ class Register extends Component {
 
         auth.createUserWithEmailAndPassword(email, password)
         .then(user => {if(user) {
-            this.props.navigation.navigate('login')
             console.log("El usuario creado es ", user);
-        }})
-
-
+            this.props.navigation.navigate('login')
+            db.collection('users').add({
+                email: email,
+                name: name,
+                password: password,
+                minibio: minibio,
+                createdAt: Date.now(),
+                fotoPerfil: fotoPerfil
+            })
+            .catch((error) => console.log(error))
+        }} 
+    
+    )
+        .catch((error) => {if(error.code === "auth/email-already-in-use"){
+            this.setState({error: 'El email ya esta en uso'})
+        }}) 
     }
 
     redirect(){
@@ -92,7 +104,7 @@ class Register extends Component {
                 />
                 <TextInput
                         onChangeText={(text) => this.setState({fotoPerfil: text, error: ''})}
-                        value={this.state.minibio}
+                        value={this.state.fotoPerfil}
                         placeholder='Indica tu foto de perfil'
                         keyboardType='default'
                         style={styles.input}

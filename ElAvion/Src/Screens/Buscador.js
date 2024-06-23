@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { TextInput, View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { auth, db } from "../firebase/config";
+import { auth, db } from "../firebase/Config";
 
 class Buscador extends Component {
   constructor(props) {
@@ -96,7 +96,7 @@ class Buscador extends Component {
                 ) : (
                   <Image
                     style={styles.profilePic}
-                    source={require('../../assets/fotoDeafult.jpeg')}
+                    source={require('../../assets/DefaultPhoto.jpg')}
                     resizeMode="contain"
                   />
                 )}

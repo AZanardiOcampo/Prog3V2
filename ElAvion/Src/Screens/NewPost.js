@@ -26,7 +26,7 @@ export default class NewPost extends Component {
                 this.setState({
                     descripcion:''
                 },
-                () => this.props.navigation.navigate('new-post')
+                () => this.props.navigation.navigate('home')
                 )
             })
             .catch((err)=> console.log(err))

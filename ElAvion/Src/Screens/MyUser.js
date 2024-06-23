@@ -1,10 +1,10 @@
 import {Text, View, FlatList, TouchableOpacity, Image} from 'react-native'
 import React, {Component} from 'react'
 import {StyleSheet} from 'react-native'
-import {db, auth} from '../firebase/config'
-import PostPerfil from '../Component/PostPerfil'
+import {db, auth} from '../firebase/Config'
+import ProfilePost from '../components/ProfilePost'
 
-export default class miPerfil extends Component {
+export default class MyUser extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -57,7 +57,6 @@ export default class miPerfil extends Component {
                 })
                 .catch((error) => {
                     console.error('Error al desloguear:', error);
-                    // Manejar errores de deslogueo según sea necesario
                 });
                 
             })
@@ -72,7 +71,7 @@ export default class miPerfil extends Component {
                 <Text style={styles.title}>Mi Perfil</Text>
                 {this.state.datosUsuario ? 
                     <View style={styles.perfil}>
-                        <Image style={styles.img} source={this.state.datosUsuario.fotoPerfil ? {uri: this.state.datosUsuario.fotoPerfil} : require('../../assets/fotoDeafult.jpeg')} resizeMode='contain' />
+                        <Image style={styles.img} source={this.state.datosUsuario.fotoPerfil ? {uri: this.state.datosUsuario.fotoPerfil} : require('../../assets/DefaultPhoto.jpg')} resizeMode='contain' />
                         <Text style={styles.text}>{this.state.datosUsuario.nombre}</Text>
                         <Text style={styles.text}>{this.state.datosUsuario.mail}</Text>
                         <Text style={styles.text}>{this.state.datosUsuario.minibio}</Text>
@@ -98,7 +97,7 @@ export default class miPerfil extends Component {
                 <FlatList
                     data={this.state.posteos}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => <View><PostPerfil borrarPosteo={(idPosteo) => this.borrarPosteo(idPosteo)} posteo={item}/></View>}
+                    renderItem={({item}) => <View><ProfilePost borrarPosteo={(idPosteo) => this.borrarPosteo(idPosteo)} post={item}/></View>}
                 />
             </View>
         )

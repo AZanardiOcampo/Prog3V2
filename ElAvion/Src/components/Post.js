@@ -9,6 +9,7 @@ export default class Post extends Component {
         super(props)
         this.state = {
             estaMiLike: false,
+            UserData: {}
         }
     }
 
@@ -18,8 +19,15 @@ export default class Post extends Component {
         if(estaMiLike){
             this.setState({estaMiLike: true})
         }
+        db.collection('users').where('mail', '==', this.props.post.data.owner)
+        .onSnapshot(data => {
+            data.forEach(doc => {    
+                console.log(doc.data());
+                this.setState({UserData:doc.data()})
+            })
+        });
     }
-
+     
     like(){
         db
         .collection('posteos')
@@ -42,18 +50,37 @@ export default class Post extends Component {
         .catch((err) => console.log(err))
     }
 
+    goToProfile(user){
+        {
+            user != auth.currentUser.email ?
+          this.props.navigation.navigate('user-profile', {mail: user})
+          :
+          this.props.navigation.navigate('my-profile')
+        }
+    }
 
   render() {
     return (
       <View>
+        <TouchableOpacity onPress={() => this.goToProfile(this.state.UserData.email)}>
+        <Text>
+            <p>
+            {
+            this.props.post.data.owner
+            }
+            </p>
+        </Text>
+        </TouchableOpacity>
         <Image 
          source={{uri: this.props.post.data.imageUrl}}
             style={styles.imgPost}
         />
         <Text>
+            <p>
             {
             this.props.post.data.descripcion
             }
+            </p>
         </Text>
             <Text>
         {
