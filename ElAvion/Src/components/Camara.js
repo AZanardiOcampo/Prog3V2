@@ -1,7 +1,7 @@
 import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { Component } from 'react'
 import { Camera } from 'expo-camera'
-import { storage, auth } from '../firebase/config'
+import { storage, auth } from '../firebase/Config'
 
 export default class Camara extends Component {
     constructor(props){
@@ -97,7 +97,8 @@ const styles = StyleSheet.create({
         flex:1
     },
     camara:{
-        height:400
+        height: 400,
+        width: 400
     },
     imagen:{
         height: 400,
