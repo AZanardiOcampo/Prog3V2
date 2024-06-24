@@ -14,7 +14,7 @@ export default class SecondaryNav extends Component {
             <Stack.Navigator>
                 <Stack.Screen name='home' component={Home} options = {{ headerShown: false}}/>
                 <Stack.Screen name='user-profile' component={UserProfile} options = {{ headerShown: false}}/>
-                {/* <Stack.Screen name = 'post-detail' component = {PostDetail} options={{headerShown : false}} /> */}
+                <Stack.Screen name = 'post-detail' component = {PostDetail} options={{headerShown : false}} />
             </Stack.Navigator>
         )
     }

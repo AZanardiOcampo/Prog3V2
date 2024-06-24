@@ -117,7 +117,7 @@ export default class Post extends Component {
                 {auth.currentUser.email != null &&
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => { this.props.navigation.navigate('PostDetail', { id: this.props.post.id }) }}
+                        onPress={() => { this.props.navigation.navigate('post-detail', { id: this.props.post.id }) }}
                     >
                         <Text style={styles.buttonText}>View all comments</Text>
                     </TouchableOpacity>
