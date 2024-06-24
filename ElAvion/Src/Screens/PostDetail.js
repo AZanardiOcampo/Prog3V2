@@ -1,12 +1,7 @@
-import {Text, View, TouchableOpacity, Image, FlatList, TextInput} from 'react-native'
-import {Component} from 'react'
-import { StyleSheet } from 'react-native'
+/* import {Component} from 'react'
 import firebase from 'firebase'
-import {db, auth} from '../firebase/Config'
 import { Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
-import { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import firebase from 'firebase';
 import { db, auth } from '../firebase/Config';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -104,4 +99,4 @@ onSubmit(comentario) {
         alert('no podes comentar algo vacio');
     }
 
-}}}
+}}} */

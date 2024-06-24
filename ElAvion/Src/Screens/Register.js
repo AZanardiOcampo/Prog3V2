@@ -18,7 +18,7 @@ class Register extends Component {
         if(
             username === null || username === '' || username.length < 5
         ){
-            this.setState({error: 'El name no puede ser menor de 5 caracteres'})
+            this.setState({error: 'El nombre de usuario no puede ser menor de 5 caracteres'})
             return false
         }
         if(
@@ -31,7 +31,7 @@ class Register extends Component {
 
             password === null || password === '' || password.length < 6
         ){
-            this.setState({error: 'La password no puede ser menor de 6 caracteres'})
+            this.setState({error: 'La contraseña no puede ser menor de 6 caracteres'})
             return false
         }
 
