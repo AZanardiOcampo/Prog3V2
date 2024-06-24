@@ -27,7 +27,7 @@ export default class MyUser extends Component {
                 this.setState({posteos: posts})
             }
         )
-        db.collection('users').where('mail', '==', auth.currentUser.email)
+        db.collection('users').where('email', '==', auth.currentUser.email)
             .onSnapshot(data => {
                 data.forEach(doc => {
                     this.setState({datosUsuario: doc.data(), idUsuario: doc.id })
@@ -40,29 +40,10 @@ export default class MyUser extends Component {
             .then(() => this.props.navigation.navigate('login'))
     }
 
-    borrarPosteo(idPosteo) {
+    deletePost(idPosteo) {
         db.collection('posteos').doc(idPosteo).delete()
             .then((res) => console.log(res))
             .catch(e => console.log(e))
-    }
-    borrarUser(id){
-        db.collection('users').doc(id).delete()
-        .then(() =>{
-            auth.currentUser.delete()
-            .then(() => {
-                auth.signOut()
-                .then(() => {
-                    console.log('Usuario borrado y deslogueado correctamente');
-                    this.props.navigation.navigate('login');
-                })
-                .catch((error) => {
-                    console.error('Error al desloguear:', error);
-                });
-                
-            })
-            .catch((e) => console.log(e))
-        })
-        .catch((e) => console.log('error en el documento:' + e))
     }
 
     render() {
@@ -71,9 +52,8 @@ export default class MyUser extends Component {
                 <Text style={styles.title}>Mi Perfil</Text>
                 {this.state.datosUsuario ? 
                     <View style={styles.perfil}>
-                        <Image style={styles.img} source={this.state.datosUsuario.fotoPerfil ? {uri: this.state.datosUsuario.fotoPerfil} : require('../../assets/DefaultPhoto.jpg')} resizeMode='contain' />
-                        <Text style={styles.text}>{this.state.datosUsuario.nombre}</Text>
-                        <Text style={styles.text}>{this.state.datosUsuario.mail}</Text>
+                        <Text style={styles.text}>{this.state.datosUsuario.username}</Text>
+                        <Text style={styles.text}>{this.state.datosUsuario.email}</Text>
                         <Text style={styles.text}>{this.state.datosUsuario.minibio}</Text>
                         <Text style={styles.text}>Cantidad de posteos: {this.state.posteos.length}</Text>
                         <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate("EditUser")}>
@@ -82,24 +62,31 @@ export default class MyUser extends Component {
                         <TouchableOpacity style={styles.logoutButton} onPress={() => this.logout()}>
                             <Text style={styles.logoutButtonText}>Logout</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.logoutButton} onPress={() => this.borrarUser(this.state.idUsuario)}>
-                            <Text style={styles.logoutButtonText}>Borrar Perfil</Text>
-                        </TouchableOpacity>
                     </View>
                     : 
-                    // <TouchableOpacity style={styles.logoutButton} onPress={() => this.logout()}>
-                    //         <Text style={styles.logoutButtonText}>Logout</Text>
-                    //     </TouchableOpacity>
-                     <Text>Cargando información del usuario...</Text>
+                     <Text>Cargando informaciÃ³n del usuario...</Text>
                     
 
                 }
                 <FlatList
                     data={this.state.posteos}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => <View><ProfilePost borrarPosteo={(idPosteo) => this.borrarPosteo(idPosteo)} post={item}/></View>}
+                    renderItem={({item}) => <View><ProfilePost borrarPosteo={(idPosteo) => this.deletePost(idPosteo)} post={item}/></View>}
                 />
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    img: {
+        flex: 1
+    },
+    text: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+        color: '#000'
+    }
+})

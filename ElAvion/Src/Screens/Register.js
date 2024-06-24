@@ -1,24 +1,22 @@
 import React, {Component} from 'react'
 import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native'
-import { auth } from '../firebase/Config'
+import { auth, db } from '../firebase/Config'
 
 class Register extends Component {
     constructor(props){
         super(props)
         this.state = {
-            name:'',
+            username:'',
             password:'',
             email:'',
             error: '',
-            username: '',
-            minibio: '',
-            fotoPerfil: ''
+            minibio: ''
         }
     }
 
-    onSubmit(name, email, password){
+    onSubmit(username, email, password, minibio){
         if(
-            name === null || name === '' || name.length < 5
+            username === null || username === '' || username.length < 5
         ){
             this.setState({error: 'El name no puede ser menor de 5 caracteres'})
             return false
@@ -40,15 +38,14 @@ class Register extends Component {
         auth.createUserWithEmailAndPassword(email, password)
         .then(user => {if(user) {
             console.log("El usuario creado es ", user);
-            this.props.navigation.navigate('login')
             db.collection('users').add({
                 email: email,
-                name: name,
+                username: username,
                 password: password,
                 minibio: minibio,
                 createdAt: Date.now(),
-                fotoPerfil: fotoPerfil
             })
+            .then(this.props.navigation.navigate('login'))
             .catch((error) => console.log(error))
         }} 
     
@@ -67,13 +64,6 @@ class Register extends Component {
             <View>
                 <Text>Registra tu usuario</Text>
                 <TextInput
-                    onChangeText={(text) => this.setState({name: text, error: ''})}
-                    value={this.state.name}
-                    placeholder='Indica tu nombre'
-                    keyboardType='default'
-                    style={styles.input}
-                />
-                <TextInput
                     onChangeText={(text) => this.setState({email: text, error: ''})}
                     value={this.state.email}
                     placeholder='Indica tu email'
@@ -83,7 +73,7 @@ class Register extends Component {
                 <TextInput
                     onChangeText={(text) => this.setState({password: text, error: ''})}
                     value={this.state.password}
-                    placeholder='Indica tu contraseña'
+                    placeholder='Indica tu contraseÃ±a'
                     keyboardType='default'
                     secureTextEntry = {true}
                     style={styles.input}
@@ -102,16 +92,9 @@ class Register extends Component {
                         keyboardType='default'
                         style={styles.input}
                 />
-                <TextInput
-                        onChangeText={(text) => this.setState({fotoPerfil: text, error: ''})}
-                        value={this.state.fotoPerfil}
-                        placeholder='Indica tu foto de perfil'
-                        keyboardType='default'
-                        style={styles.input}
-                />
                 <TouchableOpacity
                     style={styles.btn}
-                    onPress={()=> this.onSubmit(this.state.name, this.state.email, this.state.password)}
+                    onPress={()=> this.onSubmit(this.state.username, this.state.email, this.state.password, this.state.minibio)}
                 >
                     <Text style={styles.textBtn}>Registrarme</Text>
                 </TouchableOpacity>
