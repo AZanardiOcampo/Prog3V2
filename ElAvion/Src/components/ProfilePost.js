@@ -10,24 +10,24 @@ class ProfilePost extends Component {
         super(props)
         this.state = {
             conteo: 0,
-            miLike: this.props.posteo.data.likes.includes(auth.currentUser.email),
-            likes: this.props.posteo.data.likes.length
+            miLike: this.props.post.data.likes.includes(auth.currentUser.email),
+            likes: this.props.post.data.likes.length
         }
     }
 
     Like() {
-        db.collection('posteos').doc(this.props.posteo.id).update({ likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email) })
-            .then(() => { this.setState({ likes: this.props.posteo.data.likes.length, miLike: true }) })
+        db.collection('posteos').doc(this.props.post.id).update({ likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email) })
+            .then(() => { this.setState({ likes: this.props.post.data.likes.length, miLike: true }) })
     }
     Unlike() {
-        db.collection('posteos').doc(this.props.posteo.id).update({ likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email) })
-            .then(() => { this.setState({ likes: this.props.posteo.data.likes.length, miLike: false }) })
+        db.collection('posteos').doc(this.props.post.id).update({ likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email) })
+            .then(() => { this.setState({ likes: this.props.post.data.likes.length, miLike: false }) })
     }
     render() {
         return (
             <View style={styles.container}>
-                <Image style={styles.img} source={{ uri: this.props.posteo.data.imageUrl }} />
-                <Text>{this.props.posteo.data.descripcion}</Text>
+                <Image style={styles.img} source={{ uri: this.props.post.data.imageUrl }} />
+                <Text>{this.props.post.data.descripcion}</Text>
                 <View style={styles.likeButton}>
                     {this.state.miLike ? <TouchableOpacity onPress={() => this.Unlike()}>
                         <AntDesign name="heart" size={24} color="black" />
@@ -38,8 +38,8 @@ class ProfilePost extends Component {
                     }
                     <Text style={styles.likeText}>{this.state.likes}</Text>
                 </View>
-                {auth.currentUser.email == this.props.posteo.data.owner ?
-                    <TouchableOpacity onPress={(idPosteo) => this.props.borrarPosteo(this.props.posteo.id)}>
+                {auth.currentUser.email == this.props.post.data.owner ?
+                    <TouchableOpacity onPress={(idPosteo) => this.props.borrarPosteo(this.props.post.id)}>
                         <Text>Borrar Posteo</Text>
                     </TouchableOpacity> :
                     <Text> </Text>
