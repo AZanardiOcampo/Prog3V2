@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import Home from '../screens/Home'
 import UserProfile from '../screens/UserProfile'
 import PostDetail from '../screens/PostDetail'
+import UserEdit from '../screens/UserEdit'
 
 const Stack = createNativeStackNavigator()
 export default class SecondaryNav extends Component {
@@ -15,6 +16,7 @@ export default class SecondaryNav extends Component {
                 <Stack.Screen name='home' component={Home} options = {{ headerShown: false}}/>
                 <Stack.Screen name='user-profile' component={UserProfile} options = {{ headerShown: false}}/>
                 <Stack.Screen name = 'post-detail' component = {PostDetail} options={{headerShown : false}} />
+                <Stack.Screen name = 'user-edit' component = {UserEdit}  options={{headerShown : false}}/>
             </Stack.Navigator>
         )
     }

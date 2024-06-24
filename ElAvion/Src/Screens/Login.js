@@ -73,7 +73,7 @@ class Login extends Component {
                     <Text style={styles.textBtn}>Loguearme</Text>
                 </TouchableOpacity>
                 <Text style={styles.registerText}>
-                    No tienes una cuenta? 
+                    ¿No tienes una cuenta? 
                     <TouchableOpacity onPress={() => this.redirect()}>
                         <Text style={styles.registerLink}> Registrate</Text>
                     </TouchableOpacity>

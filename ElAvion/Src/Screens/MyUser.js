@@ -55,7 +55,7 @@ export default class MyUser extends Component {
                         <Text style={styles.text}>{this.state.datosUsuario.email}</Text>
                         <Text style={styles.text}>{this.state.datosUsuario.minibio}</Text>
                         <Text style={styles.text}>Cantidad de posteos: {this.state.posteos.length}</Text>
-                        <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate("EditUser")}>
+                        <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate("user-edit")}>
                             <Text style={styles.buttonText}>Edit</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.logoutButton} onPress={() => this.logout()}>

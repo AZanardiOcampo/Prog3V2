@@ -5,14 +5,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { db, auth } from '../firebase/Config';
 import { StyleSheet } from 'react-native';
 import Post from '../components/Post';
-import ProfilePost from '../components/ProfilePost';
 
 export default class UserProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
             posts: [],
-            datosUsuario: null,
+            datosUsuario: [],
             email: this.props.route.params.email,
         };
     }
@@ -27,10 +26,10 @@ export default class UserProfile extends Component {
                         data: doc.data()
                     });
                 });
-                this.setState({ posteos: posts }, () => { console.log('Posts', this.state.posts); });
+                this.setState({ posts: posts }, () => { console.log('Posts', this.state.posts); });
             }
         );
-        db.collection('users').where('mail', '==', this.state.email)
+        db.collection('users').where('email', '==', this.state.email)
             .onSnapshot(data => {
                 data.forEach(doc => {
                     console.log(doc.data());
@@ -44,13 +43,8 @@ export default class UserProfile extends Component {
             <View style={styles.containerPrincipal}>
                 {this.state.datosUsuario ?
                     <View style={styles.perfil}>
-                        <Text style={styles.profileTitle}>Perfil de: {this.state.datosUsuario.name}</Text>
                         <Text style={styles.profileText}>{this.state.datosUsuario.email}</Text>
-                        {this.state.datosUsuario.fotoPerfil === '' ?
-                            <Image style={styles.img} source={require(`../../assets/DefaultPhoto.jpg`)} resizeMode='contain' /> :
-                            <Image style={styles.img} source={{ uri: this.state.datosUsuario.fotoPerfil }} resizeMode='contain' />
-                        }
-                        <Text style={styles.profileText}>{this.state.datosUsuario.name}</Text>
+                        <Text style={styles.profileText}>{this.state.datosUsuario.username}</Text>
                         <Text style={styles.profileText}>{this.state.datosUsuario.minibio}</Text>
                         <Text style={styles.profileText}>Cantidad de posteos: {this.state.posts.length}</Text>
                     </View>
