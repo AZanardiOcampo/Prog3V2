@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { getAuth, updatePassword } from 'firebase/auth';
 import { Text, View, TouchableOpacity, TextInput, Image } from 'react-native';
-import { db, auth } from '../firebase/config'
+import { db, auth } from '../firebase/Config'
 import * as ImagePicker from 'expo-image-picker'
-import { storage } from "../firebase/config";
+import { storage } from "../firebase/Config";
 
 
 class EditUser extends Component {

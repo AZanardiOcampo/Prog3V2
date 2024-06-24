@@ -19,7 +19,7 @@ export default class Post extends Component {
         if(estaMiLike){
             this.setState({estaMiLike: true})
         }
-        db.collection('users').where('mail', '==', this.props.post.data.owner)
+        db.collection('users').where('email', '==', this.props.post.data.owner)
         .onSnapshot(data => {
             data.forEach(doc => {    
                 console.log(doc.data());
@@ -53,13 +53,14 @@ export default class Post extends Component {
     goToProfile(user){
         {
             user != auth.currentUser.email ?
-          this.props.navigation.navigate('user-profile', {mail: user})
+          this.props.navigation.navigate('user-profile', {email: user})
           :
           this.props.navigation.navigate('my-profile')
         }
     }
 
   render() {
+    console.log(this.state.UserData);
     return (
       <View>
         <TouchableOpacity onPress={() => this.goToProfile(this.state.UserData.email)}>
@@ -100,8 +101,27 @@ export default class Post extends Component {
            >
                 <FontAwesome name='heart-o' color={'red'} size={24} />
             </TouchableOpacity> 
-        }
             
+        }
+                <Text style={styles.commentCount}>{this.props.post.data.comments ? this.props.post.data.comments.length : 0} comments</Text>
+                {this.props.post.data.comments && this.props.post.data.comments.length > 0 ? (
+                    <FlatList
+                        data={this.props.post.data.comments.slice(0, 3)}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => <Text style={styles.comment}>{item.owner}: {item.descripcion}</Text>}
+                        style={styles.commentList}
+                    />
+                ) : (
+                    <Text style={styles.comment}>No comments yet</Text>
+                )}
+                {auth.currentUser.email != null &&
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => { this.props.navigation.navigate('PostDetail', { id: this.props.post.id }) }}
+                    >
+                        <Text style={styles.buttonText}>View all comments</Text>
+                    </TouchableOpacity>
+                }
       </View>
     )
   }
