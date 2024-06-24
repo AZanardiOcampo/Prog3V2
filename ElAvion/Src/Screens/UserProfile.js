@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { db, auth } from '../firebase/Config';
 import { StyleSheet } from 'react-native';
 import Post from '../components/Post';
-import ProfilePost from '../components/ProfilePost'
+import ProfilePost from '../components/ProfilePost';
 
 export default class UserProfile extends Component {
     constructor(props) {
@@ -27,7 +27,7 @@ export default class UserProfile extends Component {
                         data: doc.data()
                     });
                 });
-                this.setState({ posteos: posts }, () => { console.log('Posts', this.state.posts) });
+                this.setState({ posteos: posts }, () => { console.log('Posts', this.state.posts); });
             }
         );
         db.collection('users').where('mail', '==', this.state.email)
@@ -47,7 +47,7 @@ export default class UserProfile extends Component {
                         <Text style={styles.profileTitle}>Perfil de: {this.state.datosUsuario.name}</Text>
                         <Text style={styles.profileText}>{this.state.datosUsuario.email}</Text>
                         {this.state.datosUsuario.fotoPerfil === '' ?
-                            <Image style={styles.img} source={{ uri: `../../assets/DefaultPhoto.jpg` }} resizeMode='contain' /> :
+                            <Image style={styles.img} source={require(`../../assets/DefaultPhoto.jpg`)} resizeMode='contain' /> :
                             <Image style={styles.img} source={{ uri: this.state.datosUsuario.fotoPerfil }} resizeMode='contain' />
                         }
                         <Text style={styles.profileText}>{this.state.datosUsuario.name}</Text>
@@ -58,13 +58,13 @@ export default class UserProfile extends Component {
                     <Text style={styles.loadingText}>Cargando información del usuario...</Text>
                 }
                 {this.state.posts.length == 0 ?
-                <Text>Este usuario  no tiene ningun posteo</Text> :
-                <FlatList
-                    data={ this.state.posts}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <View><Post navigation={this.props.navigation} post={item} /></View>}
-                />
-    }
+                    <Text style={styles.noPostsText}>Este usuario no tiene ningún posteo</Text> :
+                    <FlatList
+                        data={this.state.posts}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => <View><Post navigation={this.props.navigation} post={item} /></View>}
+                    />
+                }
             </View>
         );
     }
@@ -73,7 +73,7 @@ export default class UserProfile extends Component {
 const styles = StyleSheet.create({
     containerPrincipal: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#1e1e1e', 
         padding: 10,
     },
     perfil: {
@@ -84,10 +84,15 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
+        color: '#ffd700', 
+        fontFamily: 'serif', 
+        textShadowColor: '#ff0000', 
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 5,
     },
     profileText: {
         fontSize: 16,
-        color: '#333',
+        color: '#ffffff', 
         marginBottom: 5,
     },
     img: {
@@ -98,7 +103,13 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         fontSize: 18,
-        color: '#999',
+        color: '#999999', 
+        textAlign: 'center',
+        marginTop: 20,
+    },
+    noPostsText: {
+        fontSize: 16,
+        color: '#ffffff', 
         textAlign: 'center',
         marginTop: 20,
     },

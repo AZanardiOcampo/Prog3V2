@@ -113,77 +113,86 @@ class PostDetail extends Component {
 }
 
 const styles = StyleSheet.create({
-container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    padding: 10,
-},
-userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-},
-userName: {
-    fontWeight: 'bold',
-    color: '#262626',
-    marginBottom: 10,
-    fontSize: 18,
-},
-img: {
-    height: 300,
-    width: '100%',
-    borderRadius: 10,
-    marginBottom: 10,
-},
-postDescription: {
-    color: '#262626',
-    marginBottom: 10,
-},
-likeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-},
-likeIcon: {
-    marginRight: 5,
-},
-likeCount: {
-    color: '#262626',
-    marginLeft: 10,
-    marginBottom: 10,
-},
-commentInput: {
-    borderWidth: 1,
-    borderColor: '#dcdcdc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    width: '100%',
-    backgroundColor: '#f0f0f0',
-},
-button: {
-    backgroundColor: '#3897f0',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-},
-buttonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-},
-flatlist: {
-    width: '100%',
-    maxHeight: '40%', 
-},
-comment: {
-    color: '#262626',
-    marginBottom: 5,
-},
-noCommentsText: {
-    color: '#8e8e8e',
-    marginTop: 10,
-},
+    container: {
+        flex: 1,
+        backgroundColor: '#1e1e1e', 
+        padding: 10,
+    },
+    userInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    userName: {
+        fontWeight: 'bold',
+        color: '#ffd700', 
+        marginBottom: 10,
+        fontSize: 22,
+        fontFamily: 'serif', 
+        textShadowColor: '#ff0000', 
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 5,
+    },
+    img: {
+        height: 300,
+        width: '100%',
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    postDescription: {
+        color: '#ffffff', 
+        marginBottom: 10,
+        fontSize: 18,
+    },
+    likeButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    likeIcon: {
+        marginRight: 5,
+    },
+    likeCount: {
+        color: '#ffd700',
+        marginLeft: 10,
+        fontSize: 16,
+    },
+    commentInput: {
+        borderWidth: 1,
+        borderColor: '#dcdcdc',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+        width: '100%',
+        backgroundColor: '#f0f0f0',
+        color: '#000',
+    },
+    button: {
+        backgroundColor: '#ff0000', 
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    buttonText: {
+        color: '#ffffff', 
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    flatlist: {
+        width: '100%',
+        maxHeight: '40%',
+    },
+    comment: {
+        color: '#ffffff', 
+        marginBottom: 5,
+        fontSize: 16,
+    },
+    noCommentsText: {
+        color: '#8e8e8e',
+        marginTop: 10,
+    },
 });
-export default PostDetail
+
+export default PostDetail;
