@@ -1,7 +1,6 @@
-import { Text, View, FlatList } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import React, { Component } from 'react';
 import { db, auth } from '../firebase/Config';
-import { StyleSheet } from 'react-native';
 import Post from '../components/Post';
 
 export default class Feed extends Component {

@@ -14,6 +14,15 @@ class Register extends Component {
         };
     }
 
+    componentDidMount() {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log('El usuario ya está logueado:', user.email);
+                this.props.navigation.navigate('tabnav');
+            }
+        });
+    }
+
     onSubmit(username, email, password, minibio) {
         if (
             username === null || username === '' || username.length < 5
@@ -41,7 +50,6 @@ class Register extends Component {
                     db.collection('users').add({
                         email: email,
                         username: username,
-                        password: password,
                         minibio: minibio,
                         createdAt: Date.now(),
                     })
@@ -51,7 +59,9 @@ class Register extends Component {
             })
             .catch((error) => {
                 if (error.code === "auth/email-already-in-use") {
-                    this.setState({ error: 'El email ya esta en uso' });
+                    this.setState({ error: 'El email ya está en uso' });
+                } else {
+                    this.setState({ error: error.message });
                 }
             });
     }
@@ -61,19 +71,22 @@ class Register extends Component {
     }
 
     render() {
+        const { username, email, password, minibio, error } = this.state;
+        const isFormValid = username.length >= 5 && email.includes('@') && password.length >= 6;
+
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Registra tu usuario</Text>
                 <TextInput
                     onChangeText={(text) => this.setState({ email: text, error: '' })}
-                    value={this.state.email}
+                    value={email}
                     placeholder='Indica tu email'
                     keyboardType='default'
                     style={styles.input}
                 />
                 <TextInput
                     onChangeText={(text) => this.setState({ password: text, error: '' })}
-                    value={this.state.password}
+                    value={password}
                     placeholder='Indica tu contraseña'
                     keyboardType='default'
                     secureTextEntry={true}
@@ -81,21 +94,22 @@ class Register extends Component {
                 />
                 <TextInput
                     onChangeText={(text) => this.setState({ username: text, error: '' })}
-                    value={this.state.username}
+                    value={username}
                     placeholder='Indica tu nombre de usuario'
                     keyboardType='default'
                     style={styles.input}
                 />
                 <TextInput
                     onChangeText={(text) => this.setState({ minibio: text, error: '' })}
-                    value={this.state.minibio}
+                    value={minibio}
                     placeholder='Indica tu mini biografía'
                     keyboardType='default'
                     style={styles.input}
                 />
                 <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => this.onSubmit(this.state.username, this.state.email, this.state.password, this.state.minibio)}
+                    style={[styles.btn, { backgroundColor: isFormValid ? '#ff0000' : '#aaa' }]}
+                    onPress={() => this.onSubmit(username, email, password, minibio)}
+                    disabled={!isFormValid}
                 >
                     <Text style={styles.textBtn}>Registrarme</Text>
                 </TouchableOpacity>
@@ -106,9 +120,9 @@ class Register extends Component {
                     </TouchableOpacity>
                 </Text>
                 {
-                    this.state.error !== '' ?
+                    error !== '' ?
                         <Text style={styles.errorText}>
-                            {this.state.error}
+                            {error}
                         </Text>
                         :
                         null
@@ -146,7 +160,6 @@ const styles = StyleSheet.create({
         color: '#000', 
     },
     btn: {
-        backgroundColor: '#ff0000', 
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

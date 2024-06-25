@@ -1,9 +1,6 @@
-import { Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import React, { Component } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { db, auth } from '../firebase/Config';
-import { StyleSheet } from 'react-native';
 import Post from '../components/Post';
 
 export default class UserProfile extends Component {
@@ -11,7 +8,7 @@ export default class UserProfile extends Component {
         super(props);
         this.state = {
             posts: [],
-            datosUsuario: [],
+            datosUsuario: null,
             email: this.props.route.params.email,
         };
     }
@@ -26,13 +23,12 @@ export default class UserProfile extends Component {
                         data: doc.data()
                     });
                 });
-                this.setState({ posts: posts }, () => { console.log('Posts', this.state.posts); });
+                this.setState({ posts: posts });
             }
         );
         db.collection('users').where('email', '==', this.state.email)
             .onSnapshot(data => {
                 data.forEach(doc => {
-                    console.log(doc.data());
                     this.setState({ datosUsuario: doc.data() });
                 });
             });
@@ -43,20 +39,27 @@ export default class UserProfile extends Component {
             <View style={styles.containerPrincipal}>
                 {this.state.datosUsuario ?
                     <View style={styles.perfil}>
-                        <Text style={styles.profileText}>{this.state.datosUsuario.email}</Text>
+                        {this.state.datosUsuario.profilePicture ? (
+                            <Image source={{ uri: this.state.datosUsuario.profilePicture }} style={styles.img} />
+                        ) : null}
                         <Text style={styles.profileText}>{this.state.datosUsuario.username}</Text>
+                        <Text style={styles.profileText}>{this.state.datosUsuario.email}</Text>
                         <Text style={styles.profileText}>{this.state.datosUsuario.minibio}</Text>
                         <Text style={styles.profileText}>Cantidad de posteos: {this.state.posts.length}</Text>
                     </View>
                     :
                     <Text style={styles.loadingText}>Cargando información del usuario...</Text>
                 }
-                {this.state.posts.length == 0 ?
+                {this.state.posts.length === 0 ?
                     <Text style={styles.noPostsText}>Este usuario no tiene ningún posteo</Text> :
                     <FlatList
                         data={this.state.posts}
                         keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => <View><Post navigation={this.props.navigation} post={item} /></View>}
+                        renderItem={({ item }) => (
+                            <View style={styles.postContainer}>
+                                <Post navigation={this.props.navigation} post={item} />
+                            </View>
+                        )}
                     />
                 }
             </View>
@@ -73,16 +76,9 @@ const styles = StyleSheet.create({
     perfil: {
         alignItems: 'center',
         marginBottom: 20,
-    },
-    profileTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#ffd700', 
-        fontFamily: 'serif', 
-        textShadowColor: '#ff0000', 
-        textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 5,
+        backgroundColor: '#2c2c2c',
+        padding: 15,
+        borderRadius: 10,
     },
     profileText: {
         fontSize: 16,
@@ -107,7 +103,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
-    flatList: {
-        flex: 1,
+    postContainer: {
+        backgroundColor: '#2c2c2c',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 15,
     },
 });

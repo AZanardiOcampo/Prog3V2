@@ -10,7 +10,7 @@ export default class Post extends Component {
         this.state = {
             estaMiLike: false,
             UserData: {},
-            comentariosMostrados: 3,
+            comentariosMostrados: 4,
         };
     }
 
@@ -132,8 +132,8 @@ export default class Post extends Component {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#1e1e1e',
-        padding: 15,
-        marginVertical: 15,
+        padding: 10,
+        marginVertical: 10,
         borderRadius: 10,
     },
     profileContainer: {
@@ -145,11 +145,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     imgPost: {
-        height: 300, // Aumentado el tamaño de la imagen
+        height: 200,
         width: '100%',
         borderRadius: 10,
         marginBottom: 10,
-        resizeMode: 'cover', // Ajusta la imagen para cubrir el contenedor sin deformarse
+        resizeMode: 'contain',
     },
     description: {
         color: '#ffffff',

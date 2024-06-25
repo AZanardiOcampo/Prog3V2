@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React, { Component } from 'react';
 import { db, auth } from '../firebase/Config';
 import Camara from '../components/Camara';
@@ -9,11 +9,20 @@ export default class NewPost extends Component {
         this.state = {
             descripcion: '',
             imgPostUrl: '',
+            isCameraVisible: true,
         };
     }
 
+    componentDidMount() {
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                this.props.navigation.navigate('login');
+            }
+        });
+    }
+
     onSubmit(descripcion) {
-        if (descripcion != '') {
+        if (descripcion.trim() !== '' && this.state.imgPostUrl !== '') {
             db.collection('posteos').add({
                 descripcion: descripcion,
                 owner: auth.currentUser.email,
@@ -22,35 +31,37 @@ export default class NewPost extends Component {
                 likes: [],
                 comments: []
             })
-            .then((resp) => {
+            .then(() => {
                 this.setState({
-                    descripcion: ''
-                },
-                () => this.props.navigation.navigate('home')
-                );
+                    descripcion: '',
+                    imgPostUrl: '',
+                    isCameraVisible: true,
+                }, () => this.props.navigation.navigate('home'));
             })
             .catch((err) => console.log(err));
+        } else {
+            this.setState({ error: 'Debe completar todos los campos' });
         }
     }
 
     actualizarImgUrl(url) {
         this.setState({
-            imgPostUrl: url
+            imgPostUrl: url,
+            isCameraVisible: false,
         });
     }
 
     render() {
         return (
             <View style={styles.contenedor}>
-                {
-                    this.state.imgPostUrl === ''
-                    ?
+                {this.state.isCameraVisible ? (
                     <Camara actualizarImgUrl={(url) => this.actualizarImgUrl(url)} />
-                    :
+                ) : (
                     <>
+                        <Image source={{ uri: this.state.imgPostUrl }} style={styles.imagePreview} />
                         <TextInput
                             value={this.state.descripcion}
-                            onChangeText={(text) => this.setState({ descripcion: text })}
+                            onChangeText={(text) => this.setState({ descripcion: text, error: '' })}
                             placeholder='Describe tu post'
                             style={styles.input}
                         />
@@ -60,8 +71,15 @@ export default class NewPost extends Component {
                         >
                             <Text style={styles.textBtn}>Crear post</Text>
                         </TouchableOpacity>
+                        {this.state.error ? <Text style={styles.errorText}>{this.state.error}</Text> : null}
+                        <TouchableOpacity
+                            style={styles.btn}
+                            onPress={() => this.setState({ isCameraVisible: true, imgPostUrl: '' })}
+                        >
+                            <Text style={styles.textBtn}>Tomar otra foto</Text>
+                        </TouchableOpacity>
                     </>
-                }
+                )}
             </View>
         );
     }
@@ -91,9 +109,21 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
         width: '100%',
+        marginBottom: 10,
     },
     textBtn: {
         color: '#ffffff', 
         fontWeight: 'bold',
+    },
+    imagePreview: {
+        width: '100%',
+        height: 300,
+        borderRadius: 10,
+        marginBottom: 20,
+    },
+    errorText: {
+        color: '#ff0000', 
+        textAlign: 'center',
+        marginBottom: 20,
     },
 });

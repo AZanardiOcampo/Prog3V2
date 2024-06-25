@@ -16,6 +16,7 @@ class Login extends Component {
         auth.onAuthStateChanged(user => {
             if (user) {
                 console.log('El email logueado es ', auth.currentUser.email);
+                this.props.navigation.navigate('tabnav');
             }
         });
     }
@@ -40,6 +41,9 @@ class Login extends Component {
                     this.props.navigation.navigate('tabnav');
                     console.log("El usuario logueado es ", user);
                 }
+            })
+            .catch(error => {
+                this.setState({ error: error.message });
             });
     }
 
@@ -48,40 +52,44 @@ class Login extends Component {
     }
 
     render() {
+        const { email, password, error } = this.state;
+        const isFormValid = email.includes('@') && password.length >= 6;
+
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Loguea tu usuario</Text>
                 <TextInput
                     onChangeText={(text) => this.setState({ email: text, error: '' })}
-                    value={this.state.email}
+                    value={email}
                     placeholder='Indica tu email'
                     keyboardType='default'
                     style={styles.input}
                 />
                 <TextInput
                     onChangeText={(text) => this.setState({ password: text, error: '' })}
-                    value={this.state.password}
+                    value={password}
                     placeholder='Indica tu contraseña'
                     secureTextEntry={true}
                     keyboardType='default'
                     style={styles.input}
                 />
                 <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => this.onSubmit(this.state.email, this.state.password)}
+                    style={[styles.btn, { backgroundColor: isFormValid ? '#ff0000' : '#aaa' }]}
+                    onPress={() => this.onSubmit(email, password)}
+                    disabled={!isFormValid}
                 >
                     <Text style={styles.textBtn}>Loguearme</Text>
                 </TouchableOpacity>
                 <Text style={styles.registerText}>
-                    ¿No tienes una cuenta? 
+                    ¿No tienes una cuenta?
                     <TouchableOpacity onPress={() => this.redirect()}>
                         <Text style={styles.registerLink}> Registrate</Text>
                     </TouchableOpacity>
                 </Text>
                 {
-                    this.state.error !== '' ?
+                    error !== '' ?
                         <Text style={styles.errorText}>
-                            {this.state.error}
+                            {error}
                         </Text>
                         :
                         null
@@ -119,7 +127,6 @@ const styles = StyleSheet.create({
         color: '#000', 
     },
     btn: {
-        backgroundColor: '#ff0000', 
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
