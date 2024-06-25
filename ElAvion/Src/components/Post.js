@@ -9,7 +9,8 @@ export default class Post extends Component {
         super(props);
         this.state = {
             estaMiLike: false,
-            UserData: {}
+            UserData: {},
+            comentariosMostrados: 3,
         };
     }
 
@@ -29,8 +30,7 @@ export default class Post extends Component {
     }
 
     like() {
-        db
-            .collection('posteos')
+        db.collection('posteos')
             .doc(this.props.post.id)
             .update({
                 likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)
@@ -40,8 +40,7 @@ export default class Post extends Component {
     }
 
     unlike() {
-        db
-            .collection('posteos')
+        db.collection('posteos')
             .doc(this.props.post.id)
             .update({
                 likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)
@@ -51,21 +50,26 @@ export default class Post extends Component {
     }
 
     goToProfile(user) {
-        {
-            user != auth.currentUser.email ?
-                this.props.navigation.navigate('user-profile', { email: user })
-                :
-                this.props.navigation.navigate('my-profile');
-        }
+        user !== auth.currentUser.email
+            ? this.props.navigation.navigate('user-profile', { email: user })
+            : this.props.navigation.navigate('my-profile');
+    }
+
+    mostrarMasComentarios = () => {
+        this.setState((prevState) => ({
+            comentariosMostrados: prevState.comentariosMostrados + 3,
+        }));
     }
 
     render() {
-        console.log(this.state.UserData);
+        console.log(this.props.post.data);
+        const { comentariosMostrados } = this.state;
+        const comentarios = this.props.post.data.comments || [];
         return (
-            <View style={styles.container}>
-                <TouchableOpacity onPress={() => this.goToProfile(this.state.UserData.email)}>
+            <TouchableOpacity style={styles.container} onPress={() => this.props.navigation.navigate('post-detail', { id: this.props.post.id })}>
+                <TouchableOpacity onPress={() => this.goToProfile(this.state.UserData.email)} style={styles.profileContainer}>
                     <Text style={styles.ownerText}>
-                        {this.props.post.data.owner}
+                        {this.state.UserData.username}
                     </Text>
                 </TouchableOpacity>
                 <Image
@@ -73,103 +77,123 @@ export default class Post extends Component {
                     style={styles.imgPost}
                 />
                 <Text style={styles.description}>
-                    {this.props.post.data.descripcion}
+                    {this.state.UserData.username}: {this.props.post.data.descripcion}
                 </Text>
                 <Text style={styles.likeCount}>
                     {this.props.post.data.likes.length} likes
                 </Text>
                 {
-                    this.state.estaMiLike ?
-                        <TouchableOpacity
+                    this.state.estaMiLike
+                        ? <TouchableOpacity
                             onPress={() => this.unlike()}
                             style={styles.likeButton}
                         >
                             <FontAwesome name='heart' color={'red'} size={24} />
                         </TouchableOpacity>
-                        :
-                        <TouchableOpacity
+                        : <TouchableOpacity
                             onPress={() => this.like()}
                             style={styles.likeButton}
                         >
                             <FontAwesome name='heart-o' color={'red'} size={24} />
                         </TouchableOpacity>
                 }
-                <Text style={styles.commentCount}>{this.props.post.data.comments ? this.props.post.data.comments.length : 0} comments</Text>
-                {this.props.post.data.comments && this.props.post.data.comments.length > 0 ? (
-                    <FlatList
-                        data={this.props.post.data.comments.slice(0, 3)}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => <Text style={styles.comment}>{item.owner}: {item.descripcion}</Text>}
-                        style={styles.commentList}
-                    />
-                ) : (
-                    <Text style={styles.comment}>No comments yet</Text>
-                )}
-                {auth.currentUser.email != null &&
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => { this.props.navigation.navigate('post-detail', { id: this.props.post.id }) }}
-                    >
-                        <Text style={styles.buttonText}>View all comments</Text>
-                    </TouchableOpacity>
+                {
+                    comentarios.length > 0 ? (
+                        <>
+                            <FlatList
+                                data={comentarios.slice(0, comentariosMostrados)}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => (
+                                    <View style={styles.commentContainer}>
+                                        <Text style={styles.commentOwner}>{item.owner}</Text>
+                                        <Text style={styles.commentText}>{item.descripcion}</Text>
+                                    </View>
+                                )}
+                                style={styles.commentList}
+                            />
+                            {comentariosMostrados < comentarios.length && (
+                                <TouchableOpacity
+                                    style={styles.button}
+                                    onPress={this.mostrarMasComentarios}
+                                >
+                                    <Text style={styles.buttonText}>Mostrar más comentarios</Text>
+                                </TouchableOpacity>
+                            )}
+                        </>
+                    ) : (
+                        <Text style={styles.noComments}>Sin comentarios aun</Text>
+                    )
                 }
-            </View>
+            </TouchableOpacity>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#1e1e1e', 
-        padding: 10,
-        marginVertical: 10,
+        backgroundColor: '#1e1e1e',
+        padding: 15,
+        marginVertical: 15,
         borderRadius: 10,
+    },
+    profileContainer: {
+        marginBottom: 10,
     },
     ownerText: {
-        color: '#ffd700', 
+        color: '#ffd700',
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 5,
     },
     imgPost: {
-        height: 200,
+        height: 300, // Aumentado el tamaño de la imagen
         width: '100%',
         borderRadius: 10,
+        marginBottom: 10,
+        resizeMode: 'cover', // Ajusta la imagen para cubrir el contenedor sin deformarse
     },
     description: {
-        color: '#ffffff', 
+        color: '#ffffff',
         fontSize: 14,
-        marginVertical: 10,
+        marginBottom: 10,
     },
     likeCount: {
-        color: '#ffffff', 
+        color: '#ffffff',
         fontSize: 14,
         marginBottom: 10,
     },
     likeButton: {
         marginBottom: 10,
     },
-    commentCount: {
-        color: '#ffffff', 
-        fontSize: 14,
-        marginBottom: 10,
-    },
     commentList: {
         marginBottom: 10,
     },
-    comment: {
-        color: '#ffffff', 
-        fontSize: 14,
+    commentContainer: {
+        backgroundColor: '#2c2c2c',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    commentOwner: {
+        color: '#ffd700',
+        fontWeight: 'bold',
         marginBottom: 5,
     },
+    commentText: {
+        color: '#ffffff',
+    },
+    noComments: {
+        color: '#ffffff',
+        fontSize: 14,
+        marginVertical: 10,
+    },
     button: {
-        backgroundColor: '#ff0000', 
+        backgroundColor: '#ff0000',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
     },
     buttonText: {
-        color: '#ffffff', 
+        color: '#ffffff',
         fontWeight: 'bold',
     },
 });

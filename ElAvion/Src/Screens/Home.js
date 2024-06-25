@@ -1,7 +1,5 @@
 import { Text, View, FlatList } from 'react-native';
 import React, { Component } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { db, auth } from '../firebase/Config';
 import { StyleSheet } from 'react-native';
 import Post from '../components/Post';
@@ -13,7 +11,7 @@ export default class Feed extends Component {
             posteos: []
         };
     }
-    
+
     componentDidMount() {
         auth.onAuthStateChanged((user) => {
             if (user == null) {
@@ -21,7 +19,7 @@ export default class Feed extends Component {
                 this.props.navigation.navigate('login');
             }
         });
-        
+
         db.collection('posteos').orderBy('createdAt', 'desc').onSnapshot((docs) => {
             let postObtenidos = [];
             docs.forEach(doc => {
@@ -33,7 +31,7 @@ export default class Feed extends Component {
             this.setState({ posteos: postObtenidos });
         });
     }
-    
+
     render() {
         return (
             <View style={styles.containerPrincipal}>
@@ -41,7 +39,11 @@ export default class Feed extends Component {
                 <FlatList
                     data={this.state.posteos}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <View><Post navigation={this.props.navigation} post={item} /></View>}
+                    renderItem={({ item }) => (
+                        <View style={styles.postContainer}>
+                            <Post navigation={this.props.navigation} post={item} />
+                        </View>
+                    )}
                 />
             </View>
         );
@@ -52,10 +54,10 @@ const styles = StyleSheet.create({
     containerPrincipal: {
         flex: 1,
         backgroundColor: '#1e1e1e', 
-        padding: 10,
+        padding: 15,
     },
     header: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
@@ -63,6 +65,12 @@ const styles = StyleSheet.create({
         fontFamily: 'serif', 
         textShadowColor: '#ff0000', 
         textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 10,
-    }
+        textShadowRadius: 5,
+    },
+    postContainer: {
+        marginBottom: 20,
+        backgroundColor: '#2c2c2c',
+        borderRadius: 10,
+        padding: 10,
+    },
 });

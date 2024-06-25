@@ -1,113 +1,104 @@
-import {Component} from 'react'
-import firebase from 'firebase'
-import { Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
-import { StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, TouchableOpacity, TextInput, FlatList, StyleSheet, Image } from 'react-native';
 import { db, auth } from '../firebase/Config';
-import { AntDesign } from '@expo/vector-icons';
+import firebase from 'firebase';
 
-class PostDetail extends Component {
-    constructor(props){
+export default class PostDetail extends Component {
+    constructor(props) {
+        super(props);
         this.state = {
-            conteo: 0,
-            miLike: false,
-            likes: 0,
-            datosUsuario: {},
-            id: this.props.route.params.id,
-            post: null,
-            comentario: ""
+            post: {},
+            comentarios: [],
+            nuevoComentario: '',
+            UserData: {},
         };
     }
 
-    componentDidMount(){
-        db.collection('posteos').doc(this.state.id)
-        .onSnapshot(data => {
-            this.setState({post:data.data()})
-        })
+    componentDidMount() {
+        const postId = this.props.route.params.id;
+        this.getPostData(postId);
     }
 
-    componentDidUpdate() {
-        db.collection('users').where('email', '==', this.state.post.owner)
-        .onSnapshot(data => {
-            data.forEach(doc => {    
-                this.setState({datosUsuario:doc.data()})
+    getPostData(postId) {
+        db.collection('posteos').doc(postId).onSnapshot((doc) => {
+            if (doc.exists) {
+                this.setState({
+                    post: doc.data(),
+                    comentarios: doc.data().comments || [],
+                });
+                this.getUserData(doc.data().owner);
+            }
+        });
+    }
+
+    getUserData(email) {
+        db.collection('users').where('email', '==', email).onSnapshot(data => {
+            data.forEach(doc => {
+                this.setState({ UserData: doc.data() });
             });
-            this.setState({miLike: this.state.post.likes.includes(auth.currentUser.email),
-                likes: this.state.post.likes.length,})
-        })
+        });
     }
 
-    Like() {
-        db.collection('posteos').doc(this.props.route.params.id).update({likes:firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)})
-        .then(()=> {this.setState({likes:this.state.post.likes.length , miLike : true})})
-    }
+    agregarComentario() {
+        const { nuevoComentario, comentarios, post } = this.state;
+        if (nuevoComentario.trim() !== '') {
+            const nuevo = {
+                owner: auth.currentUser.email,
+                descripcion: nuevoComentario,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
 
-    Unlike() {
-        db.collection('posteos').doc(this.props.route.params.id).update({likes:firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)})
-        .then(()=> {this.setState({likes:this.state.post.likes.length, miLike: false})})
-    }
-
-    onSubmit(comentario){
-        if (comentario != ''){
-            db.collection('posteos').doc(this.state.id).update({
-                comments: firebase.firestore.FieldValue.arrayUnion({
-                    owner: auth.currentUser.email,
-                    descripcion : comentario,
-                    createdAt : Date.now(),
-                })
-            }).then(res => console.log(res))
-            .catch((e)=>console.log(e))
-        }
-        else {
-            alert('no es posible comentar algo vacio')
+            db.collection('posteos').doc(this.props.route.params.id).update({
+                comments: firebase.firestore.FieldValue.arrayUnion(nuevo),
+            }).then(() => {
+                this.setState({
+                    comentarios: [nuevo, ...comentarios],
+                    nuevoComentario: '',
+                });
+            }).catch((err) => console.log(err));
         }
     }
 
     render() {
+        const { comentarios, nuevoComentario, post, UserData } = this.state;
         return (
-            this.state.post == null ? <Text> Cargando </Text> :
-                <View style={styles.container}>
-                    <Text style={styles.userName}>{this.state.datosUsuario.nombre}</Text>
-                    <Image style={styles.img} source={{ uri: this.state.post.imageUrl }} />
-                    <Text style={styles.postDescription}>{this.state.post.descripcion}</Text>
-
-                    <View style={styles.likeButton}>
-                        {this.state.miLike ? (
-                            <TouchableOpacity onPress={() => this.Unlike()}>
-                                <AntDesign name="heart" size={24} color="red" style={styles.likeIcon} />
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity onPress={() => this.Like()}>
-                                <AntDesign name="hearto" size={24} color="black" style={styles.likeIcon} />
-                            </TouchableOpacity>
+            <View style={styles.container}>
+                <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.goBack()}>
+                    <Text style={styles.backButtonText}>Regresar</Text>
+                </TouchableOpacity>
+                <Text style={styles.ownerText}>{UserData.username}</Text>
+                <Image source={{ uri: post.imageUrl }} style={styles.imgPost} />
+                <Text style={styles.title}>{post.descripcion}</Text>
+                {comentarios.length > 0 ? (
+                    <FlatList
+                        data={comentarios.sort((a, b) => b.createdAt - a.createdAt)}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                            <View style={styles.commentContainer}>
+                                <Text style={styles.commentOwner}>{item.owner}</Text>
+                                <Text style={styles.commentText}>{item.descripcion}</Text>
+                            </View>
                         )}
-                        <Text style={styles.likeCount}>{this.state.likes} likes</Text>
-                    </View>
-
-                    <TextInput
-                        placeholder='Comentario'
-                        onChangeText={(text) => this.setState({ comentario: text })}
-                        value={this.state.comentario}
-                        style={styles.commentInput}
+                        style={styles.commentList}
                     />
-
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => this.state.comentario === '' ? alert('No puedes comentar un texto vacío') : this.onSubmit(this.state.comentario)}
-                    >
-                        <Text style={styles.buttonText}>Enviar!</Text>
-                    </TouchableOpacity>
-
-                    {this.state.post !== null && this.state.post.comments.length !== 0 ? (
-                        <FlatList
-                            style={styles.flatlist}
-                            data={ this.state.post.comments.sort((a,b) => b.createdAt - a.createdAt )}
-                            keyExtractor={item => item.createdAt.toString()}
-                            renderItem={({ item }) => <Text style={styles.comment}>{item.descripcion}</Text>}
-                        />
-                    ) : (
-                        <Text style={styles.noCommentsText}>Todavía no hay comentarios</Text>
-                    )}
-                </View>
+                ) : (
+                    <Text style={styles.noComments}>Aún no hay comentarios</Text>
+                )}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Agregar un comentario..."
+                    placeholderTextColor="#888"
+                    onChangeText={(text) => this.setState({ nuevoComentario: text })}
+                    value={nuevoComentario}
+                />
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: nuevoComentario.trim() === '' ? '#aaa' : '#ff0000' }]}
+                    disabled={nuevoComentario.trim() === ''}
+                    onPress={() => this.agregarComentario()}
+                >
+                    <Text style={styles.buttonText}>Comentar</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 }
@@ -115,84 +106,71 @@ class PostDetail extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#1e1e1e', 
+        backgroundColor: '#1e1e1e',
         padding: 10,
     },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
+    backButton: {
+        marginBottom: 20,
     },
-    userName: {
+    backButtonText: {
+        color: '#ffd700',
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#ffd700', 
-        marginBottom: 10,
-        fontSize: 22,
-        fontFamily: 'serif', 
-        textShadowColor: '#ff0000', 
-        textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 5,
     },
-    img: {
-        height: 300,
+    ownerText: {
+        color: '#ffd700',
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    imgPost: {
+        height: 200,
         width: '100%',
         borderRadius: 10,
         marginBottom: 10,
     },
-    postDescription: {
-        color: '#ffffff', 
+    title: {
+        color: '#ffffff',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    commentContainer: {
+        backgroundColor: '#2c2c2c',
+        padding: 10,
+        borderRadius: 5,
         marginBottom: 10,
-        fontSize: 18,
     },
-    likeButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    likeIcon: {
-        marginRight: 5,
-    },
-    likeCount: {
+    commentOwner: {
         color: '#ffd700',
-        marginLeft: 10,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    commentText: {
+        color: '#ffffff',
+    },
+    noComments: {
+        color: '#ffffff',
+        fontSize: 16,
+        textAlign: 'center',
+        marginVertical: 20,
+    },
+    input: {
+        backgroundColor: '#333',
+        color: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 10,
         fontSize: 16,
     },
-    commentInput: {
-        borderWidth: 1,
-        borderColor: '#dcdcdc',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 10,
-        width: '100%',
-        backgroundColor: '#f0f0f0',
-        color: '#000',
-    },
     button: {
-        backgroundColor: '#ff0000', 
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 10,
     },
     buttonText: {
-        color: '#ffffff', 
+        color: '#ffffff',
         fontWeight: 'bold',
         fontSize: 16,
     },
-    flatlist: {
-        width: '100%',
-        maxHeight: '40%',
-    },
-    comment: {
-        color: '#ffffff', 
-        marginBottom: 5,
-        fontSize: 16,
-    },
-    noCommentsText: {
-        color: '#8e8e8e',
-        marginTop: 10,
-    },
 });
-
-export default PostDetail;
